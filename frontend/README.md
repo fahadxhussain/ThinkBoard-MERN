@@ -26,3 +26,9 @@ First of all install **npm install lucide-react**.
 Then **npm i axios**
 
 **bg.ibelick.com** for styles and gradients
+
+## Git
+**git init**
+**git add .**
+**git commit -m "message"**
+Create an empty repository
