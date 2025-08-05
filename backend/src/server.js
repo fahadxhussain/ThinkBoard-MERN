@@ -4,6 +4,8 @@ import express from 'express';
 import cors from 'cors'
 import dotenv from 'dotenv';
 
+import path from 'path'; // This is used to handle file paths
+
 
 // const express = require('express'); //When the "type" is default which is "commonjs"
 import notesRouter from './routes/notesRouters.js'; // Importing the notes router we created
@@ -19,9 +21,9 @@ const PORT = process.env.PORT || 5001; // Use the PORT from environment variable
 //connectDB(); // Connect to the MongoDB database
 // Commenting this function here becauseFirst we should connect the application to db and then start listening on port
 
+const __dirname = path.resolve(); // This gives us the absolute path to the current directory
 
 //MIDDLEWARE
-app.use(express.json())
 // Ths is a sample middleware function
 // One of the most useful/popular middleware is the authentication middleware
 
@@ -29,11 +31,15 @@ app.use(express.json())
 app.use((req, res, next) => {
     console.log(`Request Method is ${req.method} and the response will be sent to ${req.url}`)
     next(); 
-})
-*/
-app.use(cors({
-    origin: 'http://localhost:5173'
-}))
+    })
+    */
+   if(process.env.NODE_ENV !== 'production') {
+       app.use(cors({
+           origin: 'http://localhost:5173'
+        }))
+    }
+    
+app.use(express.json())
 app.use(rateLimiter)
 
 
@@ -50,6 +56,13 @@ app.use('/api/notes', notesRouter);
 
 
 
+if(process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, '../frontend', 'dist', 'index.html'));
+    }); 
+}
 
 
 /* Now we have to move routes to seperate files for production purpose
